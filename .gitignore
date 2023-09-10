@@ -1,0 +1,16 @@
+# Logs
+frontend/logs
+frontend/log
+logs
+log
+
+node_modules
+frontend/node_modules
+frontend/dist
+frontend/dist-ssr
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+frontend/vscode/*
+!./frontend/vscode/extensions.json
