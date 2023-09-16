@@ -1,20 +1,21 @@
-import React from "react";
+import { useState } from "react";
+import Login from "./Login";
+import ChatRoom from "./ChatRoom";
+import { Container } from '@mui/material'
 
 function App() {
-  const [data, setData] = React.useState(null);
 
-  React.useEffect(() => {
-    fetch("/api")
-      .then((res) => res.json())
-      .then((data) => setData(data.message));
-  }, []);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>{!data ? "Loading..." : data}</p>
-      </header>
-    </div>
+    <Container maxWidth={false}
+      sx={{ backgroundColor: 'background.paper', height: '100vh', justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
+      {loggedIn ? (
+        <ChatRoom />
+      ) : (
+        <Login />
+      )}
+    </Container>
   );
 }
 

@@ -1,7 +1,7 @@
 console.log("Loading the database.")
 
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./../database.db');
+const db = new sqlite3.Database('./database.db');
 
 db.serialize(() => {
 
@@ -16,7 +16,7 @@ db.serialize(() => {
 
 });
 
-function newUser() {
+function newUser(ime, geslo) {
 
 }
 function getData() {
@@ -25,3 +25,5 @@ function getData() {
 //export ^^
 
 db.close();
+
+module.exports = {newUser, getData}

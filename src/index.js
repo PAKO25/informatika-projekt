@@ -5,5 +5,3 @@ if (prod) {
 } else {
   require("./dev-server.js")
 }
-
-require("./db.js")
