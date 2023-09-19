@@ -16,14 +16,20 @@ db.serialize(() => {
 
 });
 
-function newUser(ime, geslo) {
-
+function newUser(ime, hash) {
+    console.log("Creating new user")
+    db.serialize(() => {
+        db.run(`INSERT INTO uporabniki VALUES ("randomid123", "${ime}", "${hash}")`);
+    });
 }
-function getData() {
-
+async function getData(ime) {
+    //get hash from db
+    return new Promise((resolve, reject) => {
+    db.get(`SELECT * FROM uporabniki WHERE username="${ime}"`, (err, row) => {
+        resolve(row.password)
+    })
+})
 }
 //export ^^
 
-db.close();
-
-module.exports = {newUser, getData}
+module.exports = { newUser, getData }

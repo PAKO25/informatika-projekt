@@ -1,4 +1,4 @@
-import { Paper, Typography, TextField, Button } from "@mui/material";
+import { Paper, Typography, TextField, Button, FormControlLabel, Checkbox } from "@mui/material";
 import { useState } from "react";
 import ErrorIcon from '@mui/icons-material/Error';
 
@@ -12,6 +12,7 @@ function Login() {
     const [password, setPassword] = useState('')
     const [nameError, setNameError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
+    const [registerChecked, setRegisterChecked] = useState(false)
 
     const checkInputValidity = () => {
 
@@ -43,7 +44,7 @@ function Login() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ ime: name, geslo: password })
+                body: JSON.stringify({ ime: name, geslo: password, register: registerChecked })
             };
             fetch('/zgeslom', options).then(response => {
                 if (response.ok) {
@@ -90,13 +91,18 @@ function Login() {
                 ) : ("")} />
 
             {passwordField ? (
-                <TextField variant="outlined" label="Geslo" sx={{ marginTop: '2vh', width: '80%' }} FormHelperTextProps={{ component: 'div' }}
-                    value={password} onChange={(e) => { setPassword(e.target.value) }} error={passwordError}
-                    helperText={passwordError ? (
-                        <div style={{ alignItems: 'center', display: 'flex', left: '-1vw', position: 'relative' }}>
-                            <ErrorIcon /><p style={{ marginLeft: '0.5vw' }}>Vsaj 8 znakov s po eno črko, številko in posebenim znakom, razen $, @ in &.</p>
-                        </div>
-                    ) : ("")} />
+                <>
+                    <TextField variant="outlined" label="Geslo" sx={{ marginTop: '2vh', width: '80%' }} FormHelperTextProps={{ component: 'div' }}
+                        value={password} onChange={(e) => { setPassword(e.target.value) }} error={passwordError}
+                        helperText={passwordError ? (
+                            <div style={{ alignItems: 'center', display: 'flex', left: '-1vw', position: 'relative' }}>
+                                <ErrorIcon /><p style={{ marginLeft: '0.5vw' }}>Vsaj 8 znakov s po eno črko, številko in posebenim znakom, razen $, @ in &.</p>
+                            </div>
+                        ) : ("")} />
+                    <br />
+                    <FormControlLabel control={<Checkbox checked={registerChecked} onChange={() => { setRegisterChecked(!registerChecked) }} />}
+                        label="Register" sx={{ float: 'left', marginLeft: '10%' }} />
+                </>
             ) : (
                 <>
                     <br /><br />
