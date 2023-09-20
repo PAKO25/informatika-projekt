@@ -19,18 +19,30 @@ app.post("/temp", (req, res) => {
 app.post("/zgeslom", async (req, res) => {
   console.log(req.body) //req.body.geslo
   if (req.body.register) {
-    bcrypt.hash(req.body.geslo, 10, function (err, hash) {
-      newUser(req.body.ime, hash)
+    bcrypt.hash(req.body.geslo, 10, async function (err, hash) {
+      const success = await newUser(req.body.ime, hash)
+
+      if (success) {
+        //uspešno
+        res.json({ token: "Registracija uspela: token" });
+      } else {
+        res.json({ error: "Uporabnik že obstaja." })
+      }
     });
   } else {
     const hash = await getData(req.body.ime);
-    console.log("Got hash:", hash)
+
     bcrypt.compare(req.body.geslo, hash, function (err, result) {
       console.log(result ? "Pravilno geslo" : "Napačno geslo")
-  });
+      if (result) {
+        //pravo geslo
+        res.json({ token: "Registracija uspela: token" });
+      } else {
+        //napačno geslo
+        res.json({ error: "Napačno ime ali geslo." })
+      }
+    });
   }
-  //newUser(req.read())
-  res.json({ token: "Registracija uspela: token" });
 })
 
 app.get("/api", (req, res) => {
