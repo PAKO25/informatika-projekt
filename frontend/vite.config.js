@@ -14,6 +14,7 @@ export default defineConfig({
         ws: true,
       },
       '/temp' : "http://localhost:3001",
+      '/message' : "http://localhost:3001",
       '/api' : "http://localhost:3001"
     }
   }

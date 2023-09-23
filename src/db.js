@@ -10,10 +10,11 @@ db.serialize(() => {
     //db.run("INSERT INTO uporabniki VALUES ('randomid', 'randomusername', 'randompassword')")
     //db.run("DELETE FROM uporabniki WHERE id='randomid'")
 
-    db.all("SELECT * FROM uporabniki", (err, row) => {
-        //console.log(row)
-    })
+    /*db.all("SELECT * FROM tempnames", (err, row) => {
+        console.log(row)
+    })*/
 
+    //db.run("CREATE TABLE tempnames (name TEXT, count NUMBER)")
 });
 
 function newUser(ime, hash) {
@@ -36,6 +37,21 @@ async function getData(ime) {
         })
     })
 }
+
+function tempNameToDb(name) {
+    return new Promise((resolve, reject) => {
+        db.get(`SELECT * FROM tempnames WHERE name="${name}"`, (err, row) => {
+            if (row) {
+                const count = row.count + 1;
+                db.run(`UPDATE tempnames SET count=${count} WHERE name="${name}"`)
+                resolve(count)
+            } else {
+                db.run(`INSERT INTO tempnames VALUES ("${name}", 1)`);
+                resolve(1)
+            }
+        })
+    })
+}
 //export ^^
 
-module.exports = { newUser, getData }
+module.exports = { newUser, getData, tempNameToDb }

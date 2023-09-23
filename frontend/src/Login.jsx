@@ -1,6 +1,8 @@
 import { Paper, Typography, TextField, Button, FormControlLabel, Checkbox } from "@mui/material";
 import { useState } from "react";
 import ErrorIcon from '@mui/icons-material/Error';
+import { getState, setState } from "./globalState";
+
 
 const nameRegex = /^[a-zA-Z0-9_]+$/
 const passwordRegex = /^(?!.*[&$@])(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,}$/
@@ -72,6 +74,9 @@ function Login() {
                 }
             }).then(data => {
                 console.log(data);
+                fetch('/message', {method: 'POST',headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ token: data.token })
+                })
             });
         }
     }

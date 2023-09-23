@@ -1,4 +1,5 @@
 const { newUser, getData } = require("./db.js")
+const {generateNewTokenPair, generateTempAccessToken, checkToken} = require("./jwt.js")
 
 const bcrypt = require('bcrypt');
 const express = require("express");
@@ -11,9 +12,9 @@ const app = express();
 app.use(express.json());
 
 
-app.post("/temp", (req, res) => {
-  console.log(req.body)
-  res.json({ message: "Začasna prijava uspela: token" });
+app.post("/temp",async (req, res) => {
+  const token = await generateTempAccessToken(req.body.ime)
+  res.json({ token: token, expiresIn: "1 hour" });
 });
 
 app.post("/zgeslom", async (req, res) => {
@@ -44,6 +45,15 @@ app.post("/zgeslom", async (req, res) => {
     });
   }
 })
+
+app.post("/message",async (req, res) => {
+  console.log("Got messgae")
+  const token = req.body.token
+  const tokenData = await checkToken(token)
+  
+  console.log(tokenData)
+  res.json({})
+});
 
 app.get("/api", (req, res) => {
   res.json({ message: "Začasna prijava uspela: token" });

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const prod = process.env.PROD || false;
 
 if (prod) {

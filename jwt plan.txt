@@ -11,4 +11,3 @@ disablaj token familiy tudi če je refresh token iz drugega useragenta ali ip-ja
 
 daj refresh token v http-only cookie, js ga ne more dostopat
 v cookiju daj path value, da se includa samo ko gre na path /refresh (npr.)
-encriptay cookie?
