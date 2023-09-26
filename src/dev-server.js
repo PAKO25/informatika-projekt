@@ -29,7 +29,8 @@ app.post("/zgeslom", async (req, res) => {
 
       if (success) {
         //uspešno
-        res.json({ token: "Registracija uspela: token" });
+        const [token, refreshToken] = generateNewTokenPair(req.body.ime)
+        res.json({ token: token, refreshToken: refreshToken, error: false });
       } else {
         res.json({ error: true, errorMsg: "Uporabnik že obstaja." })
       }
@@ -41,7 +42,8 @@ app.post("/zgeslom", async (req, res) => {
       console.log(result ? "Pravilno geslo" : "Napačno geslo")
       if (result) {
         //pravo geslo
-        res.json({ token: "Registracija uspela: token" });
+        const [token, refreshToken] = generateNewTokenPair(req.body.ime)
+        res.json({ token: token, refreshToken: refreshToken, error: false });
       } else {
         //napačno geslo
         res.json({ error: true, errorMsg: "Napačno geslo." })

@@ -1,8 +1,30 @@
 const jwt = require("jsonwebtoken")
-const { tempNameToDb } = require("./db.js")
+const { tempNameToDb, newTokenFamily } = require("./db.js")
 
-function generateNewTokenPair() {
+function generateNewTokenPair(name) {
 
+    const family = newTokenFamily();
+
+    //access token
+    const payload = {
+        username: name,
+        verified: true,
+        family: family,
+        generation: 1,
+        refresh: false
+    }
+    const token = jwt.sign(payload, process.env.SECRET, { expiresIn: "1h" });
+
+    //refresh token
+    const refreshPayload = {
+        username: name,
+        family: family,
+        generation: 1,
+        refresh: true
+    }
+    const refreshToken = jwt.sign(refreshPayload, process.env.SECRET, { expiresIn: "14d" });
+
+    return [token, refreshToken]
 }
 async function generateTempAccessToken(name) {
     const count = await tempNameToDb(name)

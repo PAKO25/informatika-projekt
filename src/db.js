@@ -2,10 +2,11 @@ console.log("Loading the database.")
 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./database.db');
+const { v4: uuidv4 } = require('uuid');
 
 db.serialize(() => {
 
-    //db.run("DROP TABLE uporabniki")
+    //db.run("DROP TABLE tokenfamilies")
     //db.run("CREATE TABLE uporabniki (id TEXT, username TEXT, password TEXT)")
     //db.run("INSERT INTO uporabniki VALUES ('randomid', 'randomusername', 'randompassword')")
     //db.run("DELETE FROM uporabniki WHERE id='randomid'")
@@ -15,6 +16,7 @@ db.serialize(() => {
     })*/
 
     //db.run("CREATE TABLE tempnames (name TEXT, count NUMBER)")
+    //db.run("CREATE TABLE tokenfamilies (id TEXT, generation NUMBER, disabled BOOLEAN, createdAt NUMBER)")
 });
 
 function newUser(ime, hash) {
@@ -52,6 +54,12 @@ function tempNameToDb(name) {
         })
     })
 }
+
+function newTokenFamily() {
+    const family = uuidv4()
+    db.run(`INSERT INTO tokenfamilies VALUES ("${family}", 1, 0, ${Date.now()})`)
+    return family;
+}
 //export ^^
 
-module.exports = { newUser, getData, tempNameToDb }
+module.exports = { newUser, getData, tempNameToDb, newTokenFamily }
