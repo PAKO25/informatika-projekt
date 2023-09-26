@@ -17,7 +17,7 @@ async function generateTempAccessToken(name) {
 function checkToken(token) {
     return new Promise((resolve, reject) => {
         jwt.verify(token, process.env.SECRET, (err, user) => {
-            if (err) console.log(err)
+            if (err) resolve(undefined)
 
             resolve(user);
         })

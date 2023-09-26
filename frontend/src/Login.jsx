@@ -74,9 +74,10 @@ function Login() {
                 }
             }).then(data => {
                 console.log(data);
-                fetch('/message', {method: 'POST',headers: {'Content-Type': 'application/json'},
+                /*fetch('/message', {method: 'POST',headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ token: data.token })
-                })
+                })*/
+                setState("token", data.token)
             });
         }
     }

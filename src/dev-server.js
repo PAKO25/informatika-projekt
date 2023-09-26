@@ -1,5 +1,5 @@
 const { newUser, getData } = require("./db.js")
-const {generateNewTokenPair, generateTempAccessToken, checkToken} = require("./jwt.js")
+const { generateNewTokenPair, generateTempAccessToken, checkToken } = require("./jwt.js")
 
 const bcrypt = require('bcrypt');
 const express = require("express");
@@ -12,9 +12,13 @@ const app = express();
 app.use(express.json());
 
 
-app.post("/temp",async (req, res) => {
+app.post("/temp", async (req, res) => {
   const token = await generateTempAccessToken(req.body.ime)
-  res.json({ token: token, expiresIn: "1 hour" });
+  if (token) {
+    res.json({ token: token, expiresIn: "1 hour", error: false });
+  } else {
+    res.json({ error: true });
+  }
 });
 
 app.post("/zgeslom", async (req, res) => {
@@ -27,7 +31,7 @@ app.post("/zgeslom", async (req, res) => {
         //uspešno
         res.json({ token: "Registracija uspela: token" });
       } else {
-        res.json({ error: "Uporabnik že obstaja." })
+        res.json({ error: true, errorMsg: "Uporabnik že obstaja." })
       }
     });
   } else {
@@ -40,17 +44,17 @@ app.post("/zgeslom", async (req, res) => {
         res.json({ token: "Registracija uspela: token" });
       } else {
         //napačno geslo
-        res.json({ error: "Napačno ime ali geslo." })
+        res.json({ error: true, errorMsg: "Napačno geslo." })
       }
     });
   }
 })
 
-app.post("/message",async (req, res) => {
+app.post("/message", async (req, res) => {
   console.log("Got messgae")
   const token = req.body.token
   const tokenData = await checkToken(token)
-  
+
   console.log(tokenData)
   res.json({})
 });
