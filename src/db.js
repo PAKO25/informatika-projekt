@@ -11,9 +11,9 @@ db.serialize(() => {
     //db.run("INSERT INTO uporabniki VALUES ('randomid', 'randomusername', 'randompassword')")
     //db.run("DELETE FROM uporabniki WHERE id='randomid'")
 
-    /*db.all("SELECT * FROM tempnames", (err, row) => {
+    db.all("SELECT * FROM uporabniki", (err, row) => {
         console.log(row)
-    })*/
+    })
 
     //db.run("CREATE TABLE tempnames (name TEXT, count NUMBER)")
     //db.run("CREATE TABLE tokenfamilies (id TEXT, generation NUMBER, disabled BOOLEAN, createdAt NUMBER)")
@@ -23,7 +23,7 @@ function newUser(ime, hash) {
     return new Promise((resolve, reject) => {
         db.get(`SELECT * FROM uporabniki WHERE username="${ime}"`, (err, row) => {
             if (row == undefined) {
-                db.run(`INSERT INTO uporabniki VALUES ("randomid123", "${ime}", "${hash}")`);
+                db.run(`INSERT INTO uporabniki VALUES ("${uuidv4()}", "${ime}", "${hash}")`);
                 resolve(true)
             } else {
                 resolve(false)

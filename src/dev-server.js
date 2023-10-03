@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 app.use(express.json());
+app.use(express.cookieParser());
 
 
 app.post("/temp", async (req, res) => {
@@ -22,7 +23,6 @@ app.post("/temp", async (req, res) => {
 });
 
 app.post("/zgeslom", async (req, res) => {
-  console.log(req.body) //req.body.geslo
   if (req.body.register) {
     bcrypt.hash(req.body.geslo, 10, async function (err, hash) {
       const success = await newUser(req.body.ime, hash)
@@ -30,6 +30,7 @@ app.post("/zgeslom", async (req, res) => {
       if (success) {
         //uspešno
         const [token, refreshToken] = generateNewTokenPair(req.body.ime)
+        res.cookie('refershToken', refreshToken, { maxAge: 900000, httpOnly: true, path: '/exchangeToken' });
         res.json({ token: token, refreshToken: refreshToken, error: false });
       } else {
         res.json({ error: true, errorMsg: "Uporabnik že obstaja." })
@@ -52,8 +53,14 @@ app.post("/zgeslom", async (req, res) => {
   }
 })
 
+app.post("/exchangeToken", async (req, res) => {
+  console.log(req.cookies['refreshToken']);
+  res.json({})
+});
+
 app.post("/message", async (req, res) => {
   console.log("Got messgae")
+  console.log(req.cookies['refreshToken']);
   const token = req.body.token
   const tokenData = await checkToken(token)
 

@@ -30,6 +30,7 @@ function Login() {
             setPasswordError(false)
         } else {
             setPasswordError(true)
+            valid = false;
         }
         return valid;
     }
