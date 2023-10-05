@@ -11,9 +11,9 @@ db.serialize(() => {
     //db.run("INSERT INTO uporabniki VALUES ('randomid', 'randomusername', 'randompassword')")
     //db.run("DELETE FROM uporabniki WHERE id='randomid'")
 
-    db.all("SELECT * FROM uporabniki", (err, row) => {
+    /*db.all("SELECT * FROM uporabniki", (err, row) => {
         console.log(row)
-    })
+    })*/
 
     //db.run("CREATE TABLE tempnames (name TEXT, count NUMBER)")
     //db.run("CREATE TABLE tokenfamilies (id TEXT, generation NUMBER, disabled BOOLEAN, createdAt NUMBER)")
@@ -60,6 +60,23 @@ function newTokenFamily() {
     db.run(`INSERT INTO tokenfamilies VALUES ("${family}", 1, 0, ${Date.now()})`)
     return family;
 }
+
+function checkTokenFamily(familyId, generation) {
+    return new Promise((resolve, reject) => {
+        db.get(`SELECT * FROM tokenfamilies WHERE id="${familyId}"`, (err, row) => {
+            if (parseInt(row.generation) == generation && !row.disabled) {
+                console.log("Success, the family is valid.")
+                resolve(true)
+            }
+            resolve(false)
+        })
+    })
+}
+
+function updateTokenFamily(familyId, newGeneration, disabled) {
+    db.run(`UPDATE tokenfamilies SET generation = "${newGeneration}" WHERE id = "${familyId}"`)
+    db.run(`UPDATE tokenfamilies SET disabled = "${disabled}" WHERE id = "${familyId}"`)
+}
 //export ^^
 
-module.exports = { newUser, getData, tempNameToDb, newTokenFamily }
+module.exports = { newUser, getData, tempNameToDb, newTokenFamily, checkTokenFamily, updateTokenFamily }

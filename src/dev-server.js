@@ -1,5 +1,5 @@
 const { newUser, getData } = require("./db.js")
-const { generateNewTokenPair, generateTempAccessToken, checkToken } = require("./jwt.js")
+const { generateNewTokenPair, generateTempAccessToken, checkToken, generateNewTokenPairFromRefreshToken } = require("./jwt.js")
 
 const bcrypt = require('bcrypt');
 const express = require("express");
@@ -9,8 +9,9 @@ console.log("Running the dev server.")
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+const cookieParser = require('cookie-parser');
 app.use(express.json());
-app.use(express.cookieParser());
+app.use(cookieParser());
 
 
 app.post("/temp", async (req, res) => {
@@ -44,6 +45,7 @@ app.post("/zgeslom", async (req, res) => {
       if (result) {
         //pravo geslo
         const [token, refreshToken] = generateNewTokenPair(req.body.ime)
+        res.cookie('refreshToken', refreshToken, { maxAge: 900000, httpOnly: true, path: '/exchangeToken' });
         res.json({ token: token, refreshToken: refreshToken, error: false });
       } else {
         //napačno geslo
@@ -54,8 +56,21 @@ app.post("/zgeslom", async (req, res) => {
 })
 
 app.post("/exchangeToken", async (req, res) => {
-  console.log(req.cookies['refreshToken']);
-  res.json({})
+  const refreshToken = req.cookies['refreshToken']
+  if (!refreshToken) {
+    res.json({error:true, errorMsg:"No refresh token."})
+    return;
+  }
+  const data = await generateNewTokenPairFromRefreshToken(refreshToken)
+  if (!data) {
+    console.log("Error with the token")
+    res.json({error: true, errorMsg:"Invalid refresh token."})
+    return;
+  }
+  const [newToken, newRefreshToken] = data;
+  
+  res.cookie('refreshToken', newRefreshToken, { maxAge: 900000, httpOnly: true, path: '/exchangeToken' });
+  res.json({ token: newToken, refreshToken: newRefreshToken, error: false });
 });
 
 app.post("/message", async (req, res) => {
@@ -64,7 +79,7 @@ app.post("/message", async (req, res) => {
   const token = req.body.token
   const tokenData = await checkToken(token)
 
-  console.log(tokenData)
+  //console.log(tokenData)
   res.json({})
 });
 
