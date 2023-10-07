@@ -13,7 +13,7 @@ function App() {
       {loggedIn ? (
         <ChatRoom />
       ) : (
-        <Login />
+        <Login setLoggedIn={setLoggedIn}/>
       )}
     </Container>
   );

@@ -15,11 +15,11 @@ app.use(cookieParser());
 
 
 app.post("/temp", async (req, res) => {
-  const token = await generateTempAccessToken(req.body.ime)
+  const [token, username] = await generateTempAccessToken(req.body.ime)
   if (token) {
-    res.json({ token: token, expiresIn: "1 hour", error: false });
+    res.json({ token: token, expiresIn: "1 hour", error: false, username: username });
   } else {
-    res.json({ error: true });
+    res.json({ error: true, errorMsg: 'An error occured, check console.' });
   }
 });
 
@@ -31,7 +31,7 @@ app.post("/zgeslom", async (req, res) => {
       if (success) {
         //uspešno
         const [token, refreshToken] = generateNewTokenPair(req.body.ime)
-        res.cookie('refershToken', refreshToken, { maxAge: 900000, httpOnly: true, path: '/exchangeToken' });
+        res.cookie('refershToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
         res.json({ token: token, refreshToken: refreshToken, error: false });
       } else {
         res.json({ error: true, errorMsg: "Uporabnik že obstaja." })
@@ -45,7 +45,7 @@ app.post("/zgeslom", async (req, res) => {
       if (result) {
         //pravo geslo
         const [token, refreshToken] = generateNewTokenPair(req.body.ime)
-        res.cookie('refreshToken', refreshToken, { maxAge: 900000, httpOnly: true, path: '/exchangeToken' });
+        res.cookie('refershToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
         res.json({ token: token, refreshToken: refreshToken, error: false });
       } else {
         //napačno geslo
@@ -58,18 +58,18 @@ app.post("/zgeslom", async (req, res) => {
 app.post("/exchangeToken", async (req, res) => {
   const refreshToken = req.cookies['refreshToken']
   if (!refreshToken) {
-    res.json({error:true, errorMsg:"No refresh token."})
+    res.json({ error: true, errorMsg: "No refresh token." })
     return;
   }
   const data = await generateNewTokenPairFromRefreshToken(refreshToken)
   if (!data) {
     console.log("Error with the token")
-    res.json({error: true, errorMsg:"Invalid refresh token."})
+    res.json({ error: true, errorMsg: "Invalid refresh token." })
     return;
   }
   const [newToken, newRefreshToken] = data;
-  
-  res.cookie('refreshToken', newRefreshToken, { maxAge: 900000, httpOnly: true, path: '/exchangeToken' });
+
+  res.cookie('refershToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
   res.json({ token: newToken, refreshToken: newRefreshToken, error: false });
 });
 

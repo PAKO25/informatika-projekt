@@ -22,18 +22,19 @@ function generateNewTokenPair(name) {
         generation: 1,
         refresh: true
     }
-    const refreshToken = jwt.sign(refreshPayload, process.env.SECRET, { expiresIn: "14d" });
+    const refreshToken = jwt.sign(refreshPayload, process.env.SECRET, { expiresIn: "30d" });
 
     return [token, refreshToken]
 }
 async function generateTempAccessToken(name) {
     const count = await tempNameToDb(name)
+    const username = name + " " + count.toString()
     const payload = {
-        username: name + " " + count.toString(),
+        username: username,
         verified: false
     }
     const token = jwt.sign(payload, process.env.SECRET, { expiresIn: "1h" });
-    return token;
+    return [token, username];
 }
 
 function checkToken(token) {
@@ -77,7 +78,7 @@ function generateNewTokenPairFromRefreshToken(token) {
                 generation: user.generation + 1,
                 refresh: true
             }
-            const newRefreshToken = jwt.sign(refreshPayload, process.env.SECRET, { expiresIn: "14d" });
+            const newRefreshToken = jwt.sign(refreshPayload, process.env.SECRET, { expiresIn: "30d" });
 
             resolve([newToken, newRefreshToken])
         })
