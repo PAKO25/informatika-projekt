@@ -2,26 +2,28 @@ console.log("Loading the database.")
 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./database.db');
+const { v4: uuidv4 } = require('uuid');
 
 db.serialize(() => {
 
-    //db.run("DROP TABLE uporabniki")
+    //db.run("DROP TABLE tokenfamilies")
     //db.run("CREATE TABLE uporabniki (id TEXT, username TEXT, password TEXT)")
     //db.run("INSERT INTO uporabniki VALUES ('randomid', 'randomusername', 'randompassword')")
     //db.run("DELETE FROM uporabniki WHERE id='randomid'")
 
-    /*db.all("SELECT * FROM tempnames", (err, row) => {
+    /*db.all("SELECT * FROM uporabniki", (err, row) => {
         console.log(row)
     })*/
 
     //db.run("CREATE TABLE tempnames (name TEXT, count NUMBER)")
+    //db.run("CREATE TABLE tokenfamilies (id TEXT, generation NUMBER, disabled BOOLEAN, createdAt NUMBER)")
 });
 
 function newUser(ime, hash) {
     return new Promise((resolve, reject) => {
         db.get(`SELECT * FROM uporabniki WHERE username="${ime}"`, (err, row) => {
             if (row == undefined) {
-                db.run(`INSERT INTO uporabniki VALUES ("randomid123", "${ime}", "${hash}")`);
+                db.run(`INSERT INTO uporabniki VALUES ("${uuidv4()}", "${ime}", "${hash}")`);
                 resolve(true)
             } else {
                 resolve(false)
@@ -52,6 +54,29 @@ function tempNameToDb(name) {
         })
     })
 }
+
+function newTokenFamily() {
+    const family = uuidv4()
+    db.run(`INSERT INTO tokenfamilies VALUES ("${family}", 1, 0, ${Date.now()})`)
+    return family;
+}
+
+function checkTokenFamily(familyId, generation) {
+    return new Promise((resolve, reject) => {
+        db.get(`SELECT * FROM tokenfamilies WHERE id="${familyId}"`, (err, row) => {
+            if (parseInt(row.generation) == generation && !row.disabled) {
+                console.log("Success, the family is valid.")
+                resolve(true)
+            }
+            resolve(false)
+        })
+    })
+}
+
+function updateTokenFamily(familyId, newGeneration, disabled) {
+    db.run(`UPDATE tokenfamilies SET generation = "${newGeneration}" WHERE id = "${familyId}"`)
+    db.run(`UPDATE tokenfamilies SET disabled = "${disabled}" WHERE id = "${familyId}"`)
+}
 //export ^^
 
-module.exports = { newUser, getData, tempNameToDb }
+module.exports = { newUser, getData, tempNameToDb, newTokenFamily, checkTokenFamily, updateTokenFamily }

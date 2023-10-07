@@ -30,6 +30,7 @@ function Login() {
             setPasswordError(false)
         } else {
             setPasswordError(true)
+            valid = false;
         }
         return valid;
     }
@@ -56,6 +57,13 @@ function Login() {
                 }
             }).then(data => {
                 console.log(data);
+                fetch('/exchangeToken', {method: 'POST',headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ token: data.token })
+                }).then(response => {
+                    return response.json();
+                }).then(data => {
+                    console.log(data)
+                })
             });
         } else {
             //začasna registracija samo z imenom
@@ -74,9 +82,10 @@ function Login() {
                 }
             }).then(data => {
                 console.log(data);
-                fetch('/message', {method: 'POST',headers: {'Content-Type': 'application/json'},
+                /*fetch('/message', {method: 'POST',headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ token: data.token })
-                })
+                })*/
+                setState("token", data.token)
             });
         }
     }
