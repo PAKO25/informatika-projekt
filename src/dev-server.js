@@ -31,8 +31,8 @@ app.post("/zgeslom", async (req, res) => {
       if (success) {
         //uspešno
         const [token, refreshToken] = generateNewTokenPair(req.body.ime)
-        res.cookie('refershToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
-        res.json({ token: token, refreshToken: refreshToken, error: false });
+        res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
+        res.json({ token: token, error: false });
       } else {
         res.json({ error: true, errorMsg: "Uporabnik že obstaja." })
       }
@@ -45,8 +45,8 @@ app.post("/zgeslom", async (req, res) => {
       if (result) {
         //pravo geslo
         const [token, refreshToken] = generateNewTokenPair(req.body.ime)
-        res.cookie('refershToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
-        res.json({ token: token, refreshToken: refreshToken, error: false });
+        res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
+        res.json({ token: token, error: false });
       } else {
         //napačno geslo
         res.json({ error: true, errorMsg: "Napačno geslo." })
@@ -56,6 +56,7 @@ app.post("/zgeslom", async (req, res) => {
 })
 
 app.post("/exchangeToken", async (req, res) => {
+  console.log(req.cookies)
   const refreshToken = req.cookies['refreshToken']
   if (!refreshToken) {
     res.json({ error: true, errorMsg: "No refresh token." })
@@ -67,10 +68,10 @@ app.post("/exchangeToken", async (req, res) => {
     res.json({ error: true, errorMsg: "Invalid refresh token." })
     return;
   }
-  const [newToken, newRefreshToken] = data;
+  const [newToken, newRefreshToken, username] = data;
 
-  res.cookie('refershToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
-  res.json({ token: newToken, refreshToken: newRefreshToken, error: false });
+  res.cookie('refreshToken', newRefreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
+  res.json({ token: newToken, error: false, username: username });
 });
 
 app.post("/message", async (req, res) => {

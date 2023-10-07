@@ -75,7 +75,7 @@ function checkTokenFamily(familyId, generation) {
 
 function updateTokenFamily(familyId, newGeneration, disabled) {
     db.run(`UPDATE tokenfamilies SET generation = "${newGeneration}" WHERE id = "${familyId}"`)
-    db.run(`UPDATE tokenfamilies SET disabled = "${disabled}" WHERE id = "${familyId}"`)
+    db.run(`UPDATE tokenfamilies SET disabled = ${disabled} WHERE id = "${familyId}"`)
 }
 //export ^^
 

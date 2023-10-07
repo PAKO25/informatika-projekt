@@ -80,7 +80,7 @@ function generateNewTokenPairFromRefreshToken(token) {
             }
             const newRefreshToken = jwt.sign(refreshPayload, process.env.SECRET, { expiresIn: "30d" });
 
-            resolve([newToken, newRefreshToken])
+            resolve([newToken, newRefreshToken, user.username])
         })
     })
 }

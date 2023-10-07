@@ -1,11 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Login from "./Login";
 import ChatRoom from "./ChatRoom";
 import { Container } from '@mui/material'
+import { setState } from "./globalState";
 
 function App() {
 
   const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    //get new access token
+    fetch('/exchangeToken', { method: 'POST' }).then(response => {
+      if (response.ok) return response.json();
+      alert("An error occurred.");
+    }).then(data => {
+      console.log("refreshing token", data);
+      if (data.error) {
+        alert(data.errorMsg)
+        return;
+      }
+      setState("username", data.username)
+      setState("token", data.token)
+      setLoggedIn(true)
+    });
+    return () => {
+      // Cleanup code here.
+    };
+  }, []);
 
   return (
     <Container maxWidth={false}
@@ -13,7 +34,7 @@ function App() {
       {loggedIn ? (
         <ChatRoom />
       ) : (
-        <Login setLoggedIn={setLoggedIn}/>
+        <Login setLoggedIn={setLoggedIn} />
       )}
     </Container>
   );
