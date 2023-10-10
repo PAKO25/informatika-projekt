@@ -16,7 +16,8 @@ export default defineConfig({
       '/temp' : "http://localhost:3001",
       '/message' : "http://localhost:3001",
       '/api' : "http://localhost:3001",
-      '/exchangeToken' : "http://localhost:3001"
+      '/exchangeToken' : "http://localhost:3001",
+      '/socket.io': "http://localhost:3001"
     }
   }
 })
