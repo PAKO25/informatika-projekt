@@ -6,4 +6,5 @@ if (prod) {
   require("./server.js")
 } else {
   require("./dev-server.js")
+  require("./sockets.js")
 }

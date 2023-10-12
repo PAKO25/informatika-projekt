@@ -3,6 +3,7 @@ const { generateNewTokenPair, generateTempAccessToken, checkToken, generateNewTo
 
 const bcrypt = require('bcrypt');
 const express = require("express");
+const http = require('http');
 
 console.log("Running the dev server.")
 
@@ -10,9 +11,12 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 const cookieParser = require('cookie-parser');
+const cors = require('cors')
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
+const httpServer = http.createServer(app)
 
 app.post("/temp", async (req, res) => {
   const [token, username] = await generateTempAccessToken(req.body.ime)
@@ -88,6 +92,6 @@ app.get("/api", (req, res) => {
   res.json({ message: "Začasna prijava uspela: token" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
-});
+httpServer.listen(PORT);
+
+module.exports = { httpServer }

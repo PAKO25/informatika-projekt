@@ -16,7 +16,7 @@ function App() {
     }).then(data => {
       console.log("refreshing token", data);
       if (data.error) {
-        alert(data.errorMsg)
+        console.log(data.errorMsg)
         return;
       }
       setState("username", data.username)
