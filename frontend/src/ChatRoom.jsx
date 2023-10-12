@@ -1,7 +1,7 @@
 import { Paper, Typography } from "@mui/material";
 import { getState, setState } from "./globalState";
 import { useEffect, useState } from "react";
-import io from 'socket.io-client';
+import { socket } from './socket';
 
 function ChatRoom() {
 
@@ -9,17 +9,7 @@ function ChatRoom() {
 
     useEffect(() => {
         setUserName(getState('username'))
-
-        const socket = io("http://localhost:3000");
-
-        socket.on('message', (newMessage) => {
-            console.log(newMessage)
-        });
-
-        // Clean up the socket connection when the component unmounts
-        return () => {
-            socket.disconnect();
-        };
+        socket.emit("Hello", "hello")
     })
 
     return (

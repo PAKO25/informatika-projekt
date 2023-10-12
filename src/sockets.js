@@ -7,7 +7,11 @@ if (prod) {
     httpServer = require("./dev-server.js")
 }
 
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+    cors: {
+      origin: "http://localhost:3000"
+    }
+  });
 
 io.on("connection", (socket) => {
     console.log("A user connected");
@@ -17,4 +21,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log("A user disconnected");
     });
+    socket.on("Hello", () => {
+        console.log("got message from socket")
+    })
 });

@@ -11,8 +11,10 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 const cookieParser = require('cookie-parser');
+const cors = require('cors')
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 const httpServer = http.createServer(app)
 
