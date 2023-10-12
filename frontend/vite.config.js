@@ -17,10 +17,10 @@ export default defineConfig({
       '/message' : "http://localhost:3001",
       '/api' : "http://localhost:3001",
       '/exchangeToken' : "http://localhost:3001",
-      /*'/socket.io': {
+      '/socket.io': {
         target: 'http://localhost:3001',
         ws: true,
-      },*/
+      },
     }
   }
 })
