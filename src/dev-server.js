@@ -4,6 +4,7 @@ const { generateNewTokenPair, generateTempAccessToken, checkToken, generateNewTo
 const bcrypt = require('bcrypt');
 const express = require("express");
 const http = require('http');
+const { Server } = require("socket.io");
 
 console.log("Running the dev server.")
 
@@ -17,6 +18,12 @@ app.use(cookieParser());
 app.use(cors());
 
 const httpServer = http.createServer(app)
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000"
+  }
+});
 
 app.post("/temp", async (req, res) => {
   const [token, username] = await generateTempAccessToken(req.body.ime)
@@ -94,4 +101,4 @@ app.get("/api", (req, res) => {
 
 httpServer.listen(PORT);
 
-module.exports = { httpServer }
+module.exports = { io }

@@ -9,8 +9,13 @@ function ChatRoom() {
 
     useEffect(() => {
         setUserName(getState('username'))
-        socket.emit("Hello", "hello")
+
+        socket.emit('getMessages', { range: [0, 20], token: getState('token') })
     })
+
+    const sendMessage = () => {
+        socket.emit('newMessage', {message: "kako si kaj", token: getState('token')})
+    }
 
     return (
         <Paper elevation={5} sx={{ width: '40vw', height: '60vh', textAlign: 'center', padding: '2vh', borderRadius: '50px' }}>

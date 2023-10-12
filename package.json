@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "npx nodemon src/index.js",
     "build": "cd frontend && npm install && npm run build"
   },
   "engines": {
@@ -26,5 +26,11 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.7",
     "utf-8-validate": "^5.0.10"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "nodemonConfig": {
+    "ignore": ["frontend"]
   }
 }
