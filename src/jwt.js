@@ -50,13 +50,13 @@ function checkToken(token) {
 function generateNewTokenPairFromRefreshToken(token) {
     return new Promise((resolve, reject) => {
         jwt.verify(token, process.env.SECRET, async (err, user) => {
-            if (err) resolve(undefined)
+            if (err) return resolve(undefined)
 
             const validFamily = await checkTokenFamily(user.family, user.generation)
             if (!validFamily) {
                 console.log("Invalid token family, either violations have occured or it has been disbled.")
                 updateTokenFamily(user.family, user.generation, true)
-                resolve(undefined)
+                return resolve(undefined)
             }
 
             updateTokenFamily(user.family, user.generation + 1, false)

@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import Login from "./Login";
 import ChatRoom from "./ChatRoom";
 import { Container } from '@mui/material'
-import { setState } from "./globalState";
+import { setState, getState } from "./globalState";
+
+var fisrtRun = 0
 
 function App() {
 
@@ -10,6 +12,8 @@ function App() {
 
   useEffect(() => {
     //get new access token
+    if (fisrtRun > 0) return;
+    fisrtRun++
     fetch('/exchangeToken', { method: 'POST' }).then(response => {
       if (response.ok) return response.json();
       alert("An error occurred.");
