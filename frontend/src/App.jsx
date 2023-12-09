@@ -36,7 +36,7 @@ function App() {
     <Container maxWidth={false}
       sx={{ backgroundColor: 'background.paper', height: '100vh', justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
       {loggedIn ? (
-        <ChatRoom />
+        <ChatRoom setLoggedIn={setLoggedIn}/>
       ) : (
         <Login setLoggedIn={setLoggedIn} />
       )}

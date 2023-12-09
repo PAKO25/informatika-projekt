@@ -67,7 +67,6 @@ app.post("/zgeslom", async (req, res) => {
 })
 
 app.post("/exchangeToken", async (req, res) => {
-  console.log(req.cookies)
   const refreshToken = req.cookies['refreshToken']
   if (!refreshToken) {
     res.json({ error: true, errorMsg: "No refresh token." })
@@ -83,20 +82,6 @@ app.post("/exchangeToken", async (req, res) => {
 
   res.cookie('refreshToken', newRefreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
   res.json({ token: newToken, error: false, username: username });
-});
-
-app.post("/message", async (req, res) => {
-  console.log("Got messgae")
-  console.log(req.cookies['refreshToken']);
-  const token = req.body.token
-  const tokenData = await checkToken(token)
-
-  //console.log(tokenData)
-  res.json({})
-});
-
-app.get("/api", (req, res) => {
-  res.json({ message: "Začasna prijava uspela: token" });
 });
 
 httpServer.listen(PORT);

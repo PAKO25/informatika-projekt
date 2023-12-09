@@ -17,6 +17,8 @@ db.serialize(() => {
 
     //db.run("CREATE TABLE tempnames (name TEXT, count NUMBER)")
     //db.run("CREATE TABLE tokenfamilies (id TEXT, generation NUMBER, disabled BOOLEAN, createdAt NUMBER)")
+    //db.run(`CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT, username TEXT, date NUMERIC);`)
+    //db.run(`INSERT INTO messages (text, username, date) VALUES ('Hello, World!', 'test_username5', 1637683200000);`)
 });
 
 function newUser(ime, hash) {
@@ -77,6 +79,22 @@ function updateTokenFamily(familyId, newGeneration, disabled) {
     db.run(`UPDATE tokenfamilies SET generation = "${newGeneration}" WHERE id = "${familyId}"`)
     db.run(`UPDATE tokenfamilies SET disabled = ${disabled} WHERE id = "${familyId}"`)
 }
-//export ^^
 
-module.exports = { newUser, getData, tempNameToDb, newTokenFamily, checkTokenFamily, updateTokenFamily }
+function getMessages(range) {
+    return new Promise((resolve, reject) => {
+        const [lowerLimit, upperLimit] = range;
+        db.all(`SELECT * FROM messages ORDER BY id DESC LIMIT ${upperLimit - lowerLimit + 1} OFFSET ${lowerLimit};`, (err, rows) => {
+            err ? console.log(err) : null;
+            return resolve(rows)
+        })
+    })
+}
+
+function addMessage(message) {
+    return new Promise((resolve, reject) => {
+        db.run(`INSERT INTO messages (text, username, date) VALUES ("${message.text}", "${message.username}", ${message.date});`)
+        resolve()
+    })
+}
+
+module.exports = { newUser, getData, tempNameToDb, newTokenFamily, checkTokenFamily, updateTokenFamily, addMessage, getMessages }

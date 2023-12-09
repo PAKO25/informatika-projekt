@@ -1,17 +1,20 @@
 import { Paper, Typography, TextField, IconButton, InputAdornment } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import { getState, setState } from "./globalState";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { socket } from './socket';
 
 var num = 0;
 
-function ChatRoom() {
+function ChatRoom({ setLoggedIn }) {
 
     const [userName, setUserName] = useState("")
     const [data, setData] = useState([])
     const [newMessage, setNewMessage] = useState("")
     const [messageError, setMessageError] = useState(false)
+    const [noMoreMessages, setNoMoreMessages] = useState(false)
+    const [lastMessageGot, setLastMessageGot] = useState(0)
+    const paperRef = useRef();
 
     useEffect(() => {
         if (num > 0) return
@@ -20,15 +23,16 @@ function ChatRoom() {
         setUserName(getState('username'))
 
         socket.on('newMessages', (newData) => {
-            //če dobiš en message je object, drugače array objectov
-            if (typeof newData == 'object') {
-                setData([...data, newData])
-            } else {
-                setData([...data, ...newData])
-            }
+            if (newData.some(obj => obj.id == 1)) setNoMoreMessages(true)
+            setData(prevData => [...prevData, ...newData].sort((a, b) => a.id - b.id));
+        })
+        socket.on('invalidToken', () => {
+            setState("token", "")
+            setLoggedIn(false)
         })
         socket.emit('getMessages', { range: [0, 20], token: getState('token') })
-    })
+        setLastMessageGot(20)
+    }, [])
 
     const sendMessage = () => {
         if (newMessage == "") {
@@ -37,15 +41,31 @@ function ChatRoom() {
         } else {
             setMessageError(false)
         }
-        socket.emit('newMessage', { text: newMessage, token: getState('token') })
+        socket.emit('sendMessage', { text: newMessage, token: getState('token') })
     }
+
+    const getNewMessages = () => {
+        //preveri da ne dobi istega messiga 2x
+        const range = [lastMessageGot, lastMessageGot + 20]
+        if (noMoreMessages) return;
+        socket.emit('getMessages', { range: range, token: getState('token') })
+        setLastMessageGot(prevLastMessageGot => prevLastMessageGot + 20)
+    }
+
+    const handleScroll = () => {
+        console.log("handlescroll")
+        const { current } = paperRef;
+        if (!current) return;
+        const isAtTop = current.scrollTop === 0;
+        if (isAtTop) getNewMessages();
+    };
 
     return (
         <Paper elevation={5} sx={{ width: '40vw', height: '60vh', textAlign: 'center', padding: '2vh', borderRadius: '50px' }}>
             <Typography variant='caption' sx={{ fontSize: '3vh' }}>{userName}</Typography>
             <hr style={{ border: '1px solid #ccc' }} />
 
-            <Paper elevation={0} style={{ maxHeight: '40vh', height: '40vh', overflowY: 'auto', padding: '1vh', textAlign: 'left', borderBottom: '1px solid black', borderRadius: '0px' }}>
+            <Paper elevation={0} ref={paperRef} onScroll={handleScroll} style={{ maxHeight: '40vh', height: '40vh', overflowY: 'auto', padding: '1vh', textAlign: 'left', borderBottom: '1px solid black', borderRadius: '0px' }}>
                 {data.map((message, index) => (
                     <Typography key={index} variant="body1">
                         {message.text}

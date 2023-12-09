@@ -1,3 +1,4 @@
+const { getMessages, addMessage } = require("./db.js");
 const { checkToken } = require("./jwt.js");
 
 const prod = process.env.PROD || false;
@@ -11,23 +12,28 @@ if (prod) {
 io.on("connection", (socket) => {
     console.log("A user connected");
 
-    socket.on('getMessages', (data) => {
-        console.log(data);
-        socket.emit('newMessages', [
-            {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"},
-            {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"},
-            {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"},
-            {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"},
-            {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"}, {date: "xx", sender: "yy", text:"lol123"},
-        ])
+    socket.on('getMessages', async (data) => {
+        let user = await checkToken(data.token);
+        if (user == undefined) {
+            socket.emit('invalidToken', true)
+            return;
+        }
+
+        let messages = await getMessages(data.range)
+        socket.emit('newMessages', messages)
     })
 
-    socket.on('newMessage', async (data) => {
+    socket.on('sendMessage', async (data) => {
         let user = await checkToken(data.token);
-        if (user == undefined) return;
+        if (user == undefined) {
+            socket.emit('invalidToken', true)
+            return;
+        }
 
         const { username } = user;
-        io.emit('newMessages', {date: "xx", sender: username, text:data.text})
+        let message = {text: data.text, username: username, date: new Date().getTime()}
+        await addMessage(message)
+        io.emit('newMessages', [message])
     })
 
     socket.on("disconnect", () => {
