@@ -1,4 +1,4 @@
-import { Paper, Typography, TextField, IconButton, InputAdornment } from "@mui/material";
+import { Paper, Typography, TextField, IconButton, InputAdornment, CircularProgress } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import { getState, setState } from "./globalState";
 import { useEffect, useState, useRef } from "react";
@@ -14,6 +14,9 @@ function ChatRoom({ setLoggedIn }) {
     const [messageError, setMessageError] = useState(false)
     const [noMoreMessages, setNoMoreMessages] = useState(false)
     const [lastMessageGot, setLastMessageGot] = useState(0)
+    const [showLoadingCircle, setShowLoadingCircle] = useState(true)
+    const [preventAutoScrollDownOnce, setPreventAutoScrollDownOnce] = useState(false)
+    const [lastPacketSize, setLastPacketSize] = useState(0)
     const paperRef = useRef();
 
     useEffect(() => {
@@ -25,6 +28,7 @@ function ChatRoom({ setLoggedIn }) {
         socket.on('newMessages', (newData) => {
             if (newData.some(obj => obj.id == 1)) setNoMoreMessages(true)
             setData(prevData => [...prevData, ...newData].sort((a, b) => a.id - b.id));
+            setLastPacketSize(newData.length)
         })
         socket.on('invalidToken', () => {
             setState("token", "")
@@ -33,6 +37,19 @@ function ChatRoom({ setLoggedIn }) {
         socket.emit('getMessages', { range: [0, 20], token: getState('token') })
         setLastMessageGot(20)
     }, [])
+
+    useEffect(() => {
+        if (preventAutoScrollDownOnce) {
+            //scrolla nazaj dol, ker ko se doda data ko scrollas gor te avtomatsko fukne gor
+            setPreventAutoScrollDownOnce(false)
+            const elementHeight = paperRef.current.scrollHeight / data.length;
+            const scrollAmount = lastPacketSize * elementHeight - 23;
+            paperRef.current.scrollTo({ top: paperRef.current.scrollTop + scrollAmount, behavior: 'instant' });
+        } else {
+            //scrolla dol ko je new message
+            paperRef.current.scrollTo({ top: paperRef.current.scrollHeight, behavior: 'smooth' });
+        }
+    }, [data])
 
     const sendMessage = () => {
         if (newMessage == "") {
@@ -45,20 +62,25 @@ function ChatRoom({ setLoggedIn }) {
     }
 
     const getNewMessages = () => {
-        //preveri da ne dobi istega messiga 2x
-        const range = [lastMessageGot, lastMessageGot + 20]
         if (noMoreMessages) return;
+        const range = [lastMessageGot + 1, lastMessageGot + 20]
         socket.emit('getMessages', { range: range, token: getState('token') })
         setLastMessageGot(prevLastMessageGot => prevLastMessageGot + 20)
+        setPreventAutoScrollDownOnce(true)
     }
 
     const handleScroll = () => {
-        console.log("handlescroll")
-        const { current } = paperRef;
-        if (!current) return;
-        const isAtTop = current.scrollTop === 0;
+        const isAtTop = paperRef.current.scrollTop === 0;
         if (isAtTop) getNewMessages();
+        if (noMoreMessages) setShowLoadingCircle(false)
     };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    }
 
     return (
         <Paper elevation={5} sx={{ width: '40vw', height: '60vh', textAlign: 'center', padding: '2vh', borderRadius: '50px' }}>
@@ -66,6 +88,9 @@ function ChatRoom({ setLoggedIn }) {
             <hr style={{ border: '1px solid #ccc' }} />
 
             <Paper elevation={0} ref={paperRef} onScroll={handleScroll} style={{ maxHeight: '40vh', height: '40vh', overflowY: 'auto', padding: '1vh', textAlign: 'left', borderBottom: '1px solid black', borderRadius: '0px' }}>
+                {showLoadingCircle ? <div style={{ textAlign: 'center' }}>
+                    <CircularProgress size={20} />
+                </div> : null}
                 {data.map((message, index) => (
                     <Typography key={index} variant="body1">
                         {message.text}
@@ -73,7 +98,7 @@ function ChatRoom({ setLoggedIn }) {
                 ))}
             </Paper>
 
-            <TextField variant="outlined" label="Sporočilo" sx={{ marginTop: '3vh', width: '80%' }}
+            <TextField variant="outlined" label="Sporočilo" sx={{ marginTop: '3vh', width: '80%' }} onKeyDown={handleKeyDown}
                 value={newMessage} onChange={(e) => { setNewMessage(e.target.value) }} error={messageError}
                 InputProps={{
                     endAdornment: (
