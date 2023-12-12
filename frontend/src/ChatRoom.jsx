@@ -90,6 +90,7 @@ function ChatRoom({ setLoggedIn }) {
                 setState("token", "")
                 setLoggedIn(false)
                 fetch('/logout', { method: 'POST' }).then(response => {
+                    location.reload()
                     console.log("Loggedout: ",response.ok)
                 })
             }}><LogoutIcon /></IconButton>

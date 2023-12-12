@@ -25,6 +25,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on('sendMessage', async (data) => {
+        console.log("Got sent a message")
         let user = await checkToken(data.token);
         if (user == undefined) {
             socket.emit('invalidToken', true)
