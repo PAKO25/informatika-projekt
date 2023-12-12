@@ -84,6 +84,11 @@ app.post("/exchangeToken", async (req, res) => {
   res.json({ token: newToken, error: false, username: username });
 });
 
+app.post('/logout', async (req, res) => {
+  res.cookie('refreshToken', "loggedout", { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
+    res.json({})
+})
+
 httpServer.listen(PORT);
 
 module.exports = { io }

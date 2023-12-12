@@ -18,7 +18,7 @@ function App() {
       if (response.ok) return response.json();
       alert("An error occurred.");
     }).then(data => {
-      console.log("refreshing token", data);
+      console.log("refreshing token");
       if (data.error) {
         console.log(data.errorMsg)
         return;

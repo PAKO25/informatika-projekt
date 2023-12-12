@@ -55,7 +55,6 @@ function Login({ setLoggedIn }) {
                 if (response.ok) return response.json();
                 alert("An error occurred.");
             }).then(data => {
-                console.log(data);
                 if (data.error) {
                     alert(data.errorMsg)
                     return;

@@ -67,7 +67,7 @@ function checkTokenFamily(familyId, generation) {
     return new Promise((resolve, reject) => {
         db.get(`SELECT * FROM tokenfamilies WHERE id="${familyId}"`, (err, row) => {
             if (parseInt(row.generation) == generation && !row.disabled) {
-                console.log("Success, the family is valid.")
+                //the family is valid
                 return resolve(true)
             }
             resolve(false)

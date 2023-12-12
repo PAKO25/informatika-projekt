@@ -20,8 +20,8 @@ io.on("connection", (socket) => {
         }
 
         let messages = await getMessages(data.range)
-        setTimeout(() => {socket.emit('newMessages', messages)}, 1000)
-        //socket.emit('newMessages', messages)
+        //setTimeout(() => {socket.emit('newMessages', messages)}, 1000)
+        socket.emit('newMessages', messages)
     })
 
     socket.on('sendMessage', async (data) => {

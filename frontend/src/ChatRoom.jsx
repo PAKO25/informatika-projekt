@@ -1,5 +1,6 @@
 import { Paper, Typography, TextField, IconButton, InputAdornment, CircularProgress } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { getState, setState } from "./globalState";
 import { useEffect, useState, useRef } from "react";
 import { socket } from './socket';
@@ -83,32 +84,43 @@ function ChatRoom({ setLoggedIn }) {
     }
 
     return (
-        <Paper elevation={5} sx={{ width: '40vw', height: '60vh', textAlign: 'center', padding: '2vh', borderRadius: '50px' }}>
+        <Paper elevation={5} sx={{ width: '70vw', height: '70vh', textAlign: 'center', padding: '2vh', borderRadius: '20px' }}>
             <Typography variant='caption' sx={{ fontSize: '3vh' }}>{userName}</Typography>
+            <IconButton sx={{float: 'right'}} onClick={() => {
+                setState("token", "")
+                setLoggedIn(false)
+                fetch('/logout', { method: 'POST' }).then(response => {
+                    console.log("Loggedout: ",response.ok)
+                })
+            }}><LogoutIcon /></IconButton>
             <hr style={{ border: '1px solid #ccc' }} />
 
-            <Paper elevation={0} ref={paperRef} onScroll={handleScroll} style={{ maxHeight: '40vh', height: '40vh', overflowY: 'auto', padding: '1vh', textAlign: 'left', borderBottom: '1px solid black', borderRadius: '0px' }}>
+            <Paper elevation={0} ref={paperRef} onScroll={handleScroll} style={{ maxHeight: '50vh', height: '50vh', overflowY: 'auto', padding: '1vh', textAlign: 'left', borderBottom: '1px solid black', borderRadius: '0px' }}>
                 {showLoadingCircle ? <div style={{ textAlign: 'center' }}>
                     <CircularProgress size={20} />
                 </div> : null}
                 {data.map((message, index) => (
-                    <Typography key={index} variant="body1">
-                        {message.text}
-                    </Typography>
+                    <div key={index}>
+                        <Typography sx={{ display: "inline" }}>[{message.username}]: </Typography>
+                        <Typography variant="body1" sx={{ display: "inline" }}>
+                            {message.text}
+                        </Typography>
+                    </div>
                 ))}
             </Paper>
-
-            <TextField variant="outlined" label="Sporočilo" sx={{ marginTop: '3vh', width: '80%' }} onKeyDown={handleKeyDown}
-                value={newMessage} onChange={(e) => { setNewMessage(e.target.value) }} error={messageError}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton edge="end" type="submit" onClick={sendMessage}>
-                                <SendIcon />
-                            </IconButton>
-                        </InputAdornment>
-                    ),
-                }} />
+            <div style={{height: '12vh', width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center'}}>
+                <TextField variant="outlined" label="Sporočilo" sx={{ width: '80%' }} onKeyDown={handleKeyDown}
+                    value={newMessage} onChange={(e) => { setNewMessage(e.target.value) }} error={messageError}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton edge="end" type="submit" onClick={sendMessage}>
+                                    <SendIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }} />
+            </div>
         </Paper>
     )
 }
