@@ -7,6 +7,7 @@ const http = require('http');
 const { Server } = require("socket.io");
 
 const PORT = process.env.PORT || 3001;
+const prod = process.env.PROD || false;
 
 const app = express();
 const cookieParser = require('cookie-parser');
@@ -15,8 +16,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
-// Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, '../frontend/dist')));
+// react datoteke
+if (prod) {
+  app.use(express.static(path.resolve(__dirname, '../frontend/dist')));
+}
 const httpServer = http.createServer(app)
 
 const io = new Server(httpServer, {
@@ -86,15 +89,19 @@ app.post("/exchangeToken", async (req, res) => {
 
 app.post('/logout', async (req, res) => {
   res.cookie('refreshToken', "loggedout", { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, path: '/exchangeToken', sameSite: 'Strict' });
-    res.json({})
+  res.json({})
 })
 
-// All other GET requests not handled before will return our React app
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
-});
+// vsi ostali get requesti te samo vržejo an react app
+if (prod) {
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+  });
+}
 
 httpServer.listen(PORT);
 
 module.exports = { io }
 require("./sockets.js")
+
+console.log("Listening to: ", "http://localhost:"+PORT.toString())
