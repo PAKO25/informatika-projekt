@@ -1,0 +1,24 @@
+# openssl.cnf
+
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+C = SI
+ST = MB
+L = Maribor
+O = Sola
+OU = Sola
+CN = Soba
+
+[v3_req]
+keyUsage = keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = localhost  # Additional domain names or IP addresses (comma separated)
+
+#command: openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 3650 -config openssl.cnf

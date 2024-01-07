@@ -3,8 +3,10 @@ const path = require('path');
 const { newUser, getData } = require("./db.js")
 const { generateNewTokenPair, generateTempAccessToken, generateNewTokenPairFromRefreshToken } = require("./jwt.js")
 const bcrypt = require('bcrypt');
-const http = require('http');
+const https = require('https');
+const http = require('http')
 const { Server } = require("socket.io");
+const fs = require('fs');
 
 const PORT = process.env.PORT || 3001;
 const prod = process.env.PROD == "true" || false;
@@ -17,10 +19,18 @@ app.use(cookieParser());
 app.use(cors());
 
 // react datoteke
+var httpServer;
 if (prod) {
   app.use(express.static(path.resolve(__dirname, '../frontend/dist')));
+  const options = {
+    key: fs.readFileSync('../projekt/key.pem'),
+    cert: fs.readFileSync('../projekt/cert.pem')
+  };
+  httpServer = https.createServer(options, app)
+} else {
+  httpServer = http.createServer(app)
 }
-const httpServer = http.createServer(app)
+
 
 const io = new Server(httpServer, {
   cors: {
@@ -104,4 +114,8 @@ httpServer.listen(PORT);
 module.exports = { io }
 require("./sockets.js")
 
-console.log("Listening to: ", "http://localhost:"+PORT.toString())
+if (prod) {
+  console.log("Listening to: ", "https://localhost:"+PORT.toString())
+} else {
+  console.log("Listening to: ", "http://localhost:"+PORT.toString())
+}
