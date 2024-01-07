@@ -13,9 +13,7 @@ export default defineConfig({
         secure: false,
         ws: true,
       },
-      '/temp' : "http://localhost:3001",
       '/message' : "http://localhost:3001",
-      '/api' : "http://localhost:3001",
       '/exchangeToken' : "http://localhost:3001",
       '/logout' : "http://localhost:3001",
       '/socket.io': {
