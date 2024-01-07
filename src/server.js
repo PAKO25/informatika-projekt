@@ -7,7 +7,7 @@ const http = require('http');
 const { Server } = require("socket.io");
 
 const PORT = process.env.PORT || 3001;
-const prod = process.env.PROD || false;
+const prod = process.env.PROD == "true" || false;
 
 const app = express();
 const cookieParser = require('cookie-parser');
