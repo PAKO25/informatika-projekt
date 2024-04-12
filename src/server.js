@@ -8,7 +8,7 @@ const http = require('http')
 const { Server } = require("socket.io");
 const fs = require('fs');
 
-const PORT = process.env.PORT || 3001;
+const PORT = 3001;
 const prod = process.env.PROD == "true" || false;
 
 const app = express();

@@ -27,9 +27,6 @@ function App() {
       setState("token", data.token)
       setLoggedIn(true)
     });
-    return () => {
-      // Cleanup code here.
-    };
   }, []);
 
   return (
