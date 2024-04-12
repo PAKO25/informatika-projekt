@@ -41,7 +41,7 @@ function ChatRoom({ setLoggedIn }) {
 
     useEffect(() => {
         if (preventAutoScrollDownOnce) {
-            //scrolla nazaj dol, ker ko se doda data ko scrollas gor te avtomatsko fukne gor
+            //scrolla nazaj dol, ker ko se doda data ko scrollas gor te avtomatsko vrze gor
             setPreventAutoScrollDownOnce(false)
             const elementHeight = paperRef.current.scrollHeight / data.length;
             const scrollAmount = lastPacketSize * elementHeight - 23;

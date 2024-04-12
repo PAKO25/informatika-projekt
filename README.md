@@ -10,7 +10,5 @@ Nato zaženite:
 -	npm run build
 -	npm start
 
-
-
 To bo zagnalo projekt v production mode, če želite urejati kodo z HMR, spremenite PROD v .env v false.
 Če boste projekt uporabljali za lastne namene, generirajte novo JWT skrivnost ter nov certifikat ter RSA kluč.

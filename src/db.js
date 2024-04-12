@@ -4,6 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./database.db');
 const { v4: uuidv4 } = require('uuid');
 
+/*
 db.serialize(() => {
 
     //db.run("DROP TABLE tokenfamilies")
@@ -11,15 +12,16 @@ db.serialize(() => {
     //db.run("INSERT INTO uporabniki VALUES ('randomid', 'randomusername', 'randompassword')")
     //db.run("DELETE FROM uporabniki WHERE id='randomid'")
 
-    /*db.all("SELECT * FROM uporabniki", (err, row) => {
+    db.all("SELECT * FROM uporabniki", (err, row) => {
         console.log(row)
-    })*/
+    })
 
     //db.run("CREATE TABLE tempnames (name TEXT, count NUMBER)")
     //db.run("CREATE TABLE tokenfamilies (id TEXT, generation NUMBER, disabled BOOLEAN, createdAt NUMBER)")
     //db.run(`CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT, username TEXT, date NUMERIC);`)
     //db.run(`INSERT INTO messages (text, username, date) VALUES ('Hello, World!', 'test_username5', 1637683200000);`)
-});
+}); 
+*/
 
 function newUser(ime, hash) {
     return new Promise((resolve, reject) => {
