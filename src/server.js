@@ -23,8 +23,8 @@ var httpServer;
 if (prod) {
   app.use(express.static(path.resolve(__dirname, '../frontend/dist')));
   const options = {
-    key: fs.readFileSync('../projekt/key.pem'),
-    cert: fs.readFileSync('../projekt/cert.pem')
+    key: fs.readFileSync('../informatika-projekt/key.pem'),
+    cert: fs.readFileSync('../informatika-projekt/cert.pem')
   };
   httpServer = https.createServer(options, app)
 } else {
